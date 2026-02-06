@@ -4,7 +4,7 @@
 #Include <OSD>
 #Include <GestureButton>
 
-VolumeOSD := OSD()
+MediaOSD := OSD()
 
 MediaBtn := GestureButton('F14', MediaBtnCallback, MediaBtnContinueCallback, , , Colors.Olive)
 MediaBtn.MinChangeUp := 5
@@ -17,10 +17,13 @@ MediaBtnCallback(MouseGesture) {
             return
         case 'L':
             Send '{Media_Prev}'
+            MediaOSD.Show(Chr(0x23EE))
         case 'R':
             Send '{Media_Next}'
+            MediaOSD.Show(Chr(0x23ED))
         default:
             Send '{Media_Play_Pause}'
+            MediaOSD.Show(Chr(0x23EF))
     }
 }
 MediaBtnContinueCallback(MouseGesture, amount, startMonitor := 0) {
@@ -30,14 +33,14 @@ MediaBtnContinueCallback(MouseGesture, amount, startMonitor := 0) {
             if SoundGetVolume() > 0
                 SoundSetMute 0
             Vol := Round(SoundGetVolume())
-            VolumeOSD.Show(Vol, Vol, startMonitor)
+            MediaOSD.Show(Vol, Vol, startMonitor)
             return true
         case 'D':
             SoundSetVolume '-' . amount
             if SoundGetVolume() <= 0
                 SoundSetMute 1
             Vol := Round(SoundGetVolume())
-            VolumeOSD.Show(SoundGetMute() ? Chr(0x1F507) : Vol, Vol, startMonitor)
+            MediaOSD.Show(SoundGetMute() ? Chr(0x1F507) : Vol, Vol, startMonitor)
             return true
     }
     return false
