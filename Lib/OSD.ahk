@@ -19,13 +19,16 @@ class OSD {
     BgColor := Colors.Black
     DisplayTime := 750
     FadeDuration := 150
+    X := ""
+    Y := ""
 
     __New(
         mode := OSD.Mode.Mouse,
         width := 130, height := 130, cornerRadius := 30,
         transparent := 150,
         fgColor := Colors.White, bgColor := Colors.Black,
-        displayTime := 750, fadeDuration := 150) {
+        displayTime := 750, fadeDuration := 150,
+        x := "", y := "") {
         this.Mode := mode
         this.Width := width
         this.Height := height
@@ -35,6 +38,8 @@ class OSD {
         this.BgColor := bgColor
         this.DisplayTime := displayTime
         this.FadeDuration := fadeDuration
+        this.X := x
+        this.Y := y
     }
 
     Show(text, progress := -1, specificMonitor := 0) {
@@ -157,8 +162,15 @@ class OSD {
                 guiObj["LastR"] := this.CornerRadius
             }
 
-            x := mL + (mW - w) / 2
-            y := mT + (mH * (mH > mW ? 0.9 : 0.8))
+            if (this.X != "")
+                x := this.X
+            else
+                x := mL + (mW - w) / 2
+
+            if (this.Y != "")
+                y := this.Y
+            else
+                y := mT + (mH * (mH > mW ? 0.9 : 0.8))
 
             if !isVisible || x != curX || y != curY
                 guiObj["Gui"].Show("NoActivate x" x " y" y)
