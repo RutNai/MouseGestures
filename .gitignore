@@ -1,0 +1,6 @@
+# AutoHotkey / Editors
+.vscode/
+*.exe
+*.bak
+*.tmp
+*.bin
