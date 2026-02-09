@@ -174,6 +174,7 @@ class OSD {
 
             if !isVisible || x != curX || y != curY
                 guiObj["Gui"].Show("NoActivate x" x " y" y)
+            guiObj["Gui"].Opt("+AlwaysOnTop")
         }
 
         SetTimer this.CurrentHideGui, -this.DisplayTime
