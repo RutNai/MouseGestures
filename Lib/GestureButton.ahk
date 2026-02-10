@@ -21,34 +21,46 @@ class GestureButton {
     hPen := 0
     VirtualX := 0
     VirtualY := 0
-    TrailColor := 0xFFFF00
+    TrailColor := Colors.Gray
     StartMonitor := 0
+    ContextFunc := unset
+    ActivateWindowOnGesture := true
 
-    __New(button, gestureCallBack, gestureContinueCallBack := unset, winActiveTitle := '', maxTrack := 1, trailColor :=
-        0x00FFFF) {
+    __New(button, 
+        gestureCallBack, gestureContinueCallBack := unset,
+        winActiveTitle := '', maxTrack := 1, 
+        trailColor := Colors.Gray, 
+        activateWindowOnGesture := true) {
+
         this.Button := button
         this.WinActiveTitle := winActiveTitle
-        HotIfWinActive this.WinActiveTitle
+        this.ContextFunc := this.IsMouseOver.Bind(this)
+        HotIf this.ContextFunc
         Hotkey this.Button, this.BtnDown.Bind(this)
-        HotIfWinActive ; Reset context to prevent leak
+        HotIf ; Reset context to prevent leak
         this.GestureCallBack := gestureCallBack
         if IsSet(gestureContinueCallBack) && gestureContinueCallBack {
             this.GestureContinueCallBack := gestureContinueCallBack
         }
         this.MaxTrack := maxTrack
         this.TrailColor := trailColor
+        this.ActivateWindowOnGesture := activateWindowOnGesture
     }
     __Delete() {
         try {
-            HotIfWinActive this.WinActiveTitle
+            HotIf this.ContextFunc
             Hotkey this.Button, 'Off'
-            HotIfWinActive
+            HotIf
         }
     }
 
     BtnDown(*) {
+        SetWinDelay -1
         CoordMode "Mouse", "Screen"
-        MouseGetPos(&startX, &startY)
+        MouseGetPos(&startX, &startY, &hwnd)
+        if (this.WinActiveTitle != "" && hwnd && !WinActive("ahk_id " hwnd) && this.ActivateWindowOnGesture) {
+            try WinActivate "ahk_id " hwnd
+        }
         this.StartMonitor := this.GetMonitorIndexFromPoint(startX, startY)
         this.EnableTrail()
         this.StartTracking()
@@ -151,6 +163,14 @@ class GestureButton {
         }
 
         return [SubStr(this.CurrentGesture, -this.MaxTrack), speed, isNewStep]
+    }
+
+    IsMouseOver(*) {
+        CoordMode "Mouse", "Screen"
+        if (this.WinActiveTitle == "")
+            return true
+        MouseGetPos , , &hwnd
+        return WinExist(this.WinActiveTitle " ahk_id " hwnd)
     }
 
     EnableTrail() {

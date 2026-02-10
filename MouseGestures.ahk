@@ -6,7 +6,7 @@
 
 MediaOSD := OSD()
 
-MediaBtn := GestureButton('F14', MediaBtnCallback, MediaBtnContinueCallback, , , Colors.Olive)
+MediaBtn := GestureButton('F14', MediaBtnCallback, MediaBtnContinueCallback, , , Colors.Olive, false)
 MediaBtn.MinChangeUp := 5
 MediaBtn.MinChangeDown := 5
 MediaBtnCallback(MouseGesture) {
@@ -49,7 +49,7 @@ MediaBtnContinueCallback(MouseGesture, amount, startMonitor := 0) {
 ; DesktopBtn
 ; Win+Tab - open Task View
 ; Win+CTRL+left/right - cycle through virtual desktops
-DesktopBtn := GestureButton('F15', DesktopBtnCallback)
+DesktopBtn := GestureButton('F15', DesktopBtnCallback, , , , , false)
 DesktopBtnCallback(MouseGesture) {
     switch MouseGesture, false {
         case 'U':

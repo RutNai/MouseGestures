@@ -1,13 +1,15 @@
 # MouseGestures
 
-A powerful and modular Mouse Gesture library for AutoHotkey v2. This project allows you to trigger actions by moving your mouse in specific directions while holding a button, complete with visual trails and On-Screen Display (OSD) feedback.
+A powerful, modular, and responsive Mouse Gesture library for AutoHotkey v2. This project allows you to trigger actions by moving your mouse in specific directions while holding a button, complete with visual trails and On-Screen Display (OSD) feedback.
 
 ## Features
 
 *   **Gesture Recognition**: Supports directional gestures (Up, Down, Left, Right) and sequences.
 *   **Visual Feedback**: Draws a colored trail on the screen as you perform gestures to visualize the movement.
 *   **On-Screen Display (OSD)**: Displays text or progress bars (e.g., for volume control) on the active monitor.
-*   **Context Sensitive**: Define different gestures for specific applications (e.g., Browsers, VS Code) using `WinTitle` matching.
+*   **Context-Sensitive**: Define different gestures for specific applications (e.g., Browsers, VS Code) using `WinTitle` matching.
+*   **Target Unfocused Windows**: Perform gestures on the window directly under the mouse cursor, even if it's not the active window.
+*   **Highly Responsive**: Optimized for speed, with no artificial delays when switching target windows.
 *   **Continuous Actions**: Supports continuous triggering for actions like volume adjustment while holding the gesture position.
 *   **Modular Design**: Separated into libraries (`GestureButton`, `OSD`, `Colors`) for easy integration.
 
@@ -27,11 +29,14 @@ The main configuration resides in `MouseGestures.ahk`. You can define gestures u
 
 ### Creating a Gesture
 
-Instantiate the `GestureButton` class with the desired hotkey and callback function.
+Instantiate the `GestureButton` class. The constructor signature is:
+`GestureButton(Button, GestureCallBack, GestureContinueCallBack, WinActiveTitle, MaxTrack, TrailColor, ActivateWindowOnGesture)`
 
 ```ahk
 #Include <GestureButton>
 
+; A simple gesture on the Right Mouse Button
+; If no gesture is made, it falls back to a normal right-click.
 ; Define a gesture on the Right Mouse Button
 MyGesture := GestureButton('RButton', CallbackFunction)
 
@@ -48,11 +53,21 @@ CallbackFunction(gesture) {
 
 ### Context-Sensitive Gestures
 
-You can restrict gestures to specific windows by providing a WinTitle.
+You can restrict gestures to specific windows by providing a `WinTitle`. The gesture will trigger on the window under the cursor if it matches the title, automatically activating it.
 
 ```ahk
-; Only active in Chrome
-ChromeGesture := GestureButton('RButton', ChromeCallback, , 'ahk_exe chrome.exe')
+; These gestures will only work when the mouse is over a Chrome window.
+BrowserGestures := GestureButton('RButton', BrowserCallback, , 'ahk_exe chrome.exe')
+```
+
+### Global Gestures (No Window Activation)
+
+For global actions like media or volume control, you can set the `activateWindowOnGesture` parameter to `false`. This prevents the script from changing the active window, providing a seamless experience.
+
+```ahk
+; Global media keys that don't activate any window.
+; The 7th parameter (activateWindowOnGesture) is set to false.
+MediaBtn := GestureButton('F14', MediaCallback, MediaContinueCallback, '', 1, Colors.Olive, false)
 ```
 
 ### Continuous Gestures (e.g., Volume Control)
